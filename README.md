@@ -6,7 +6,7 @@ The origin is done as a project article by Ashwin Siripurapu from Stanford Unive
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+Use with Python 3.6 and Keras.
 
 ## Authors
 

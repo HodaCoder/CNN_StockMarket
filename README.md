@@ -10,7 +10,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ## Authors
 
-* **Hoda Sadeghian** - *Modified work of initial work by Ashwin Siripurapu * and Zezhou Li ** - See Acknowledgments
+* **Hoda Sadeghian** - *Modified work of initial work by Ashwin Siripurapu and Zezhou Li * - See Acknowledgments
 
 ## License
 
@@ -20,4 +20,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 * **Ashwin Siripurapu** - *Initial work* - Paper at Stanford University
 *	http://cs231n.stanford.edu/reports/ashwin_final_paper.pdf
-** https://github.com/ZezhouLi/Convolutional-Networks-for-Stock-Predicting
+* **Zezhou Li** https://github.com/ZezhouLi/Convolutional-Networks-for-Stock-Predicting

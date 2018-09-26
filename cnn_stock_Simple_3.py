@@ -9,7 +9,6 @@ from keras.layers import Conv2D, MaxPooling2D
 from sklearn.model_selection import train_test_split
 import os
 import numpy as np
-# from keras.callbacks import TensorBoard
 import imageio
 import glob
 import matplotlib.pyplot as plt
@@ -17,12 +16,15 @@ from PIL import Image
 import math
 import pathlib
 
+
+
+
 width = 1
 height = 1
 
 batch_size = 32
 num_classes = 2
-epochs = 3
+epochs = 6
 save_dir = os.path.join(os.getcwd(), 'saved_models')
 model_name = 'stock_simple_model.h5'
 folder_fig_name = r'figures'
@@ -32,6 +34,9 @@ column_for_low = 3
 file_name_stock = r'data_google_daily.txt'
 number_of_data_to_be_used = 2000
 file_type = 'dec'
+
+RUN_NAME = "Run with " + str(number_of_data_to_be_used) + " input"
+
 
 pathlib.Path(folder_fig_name).mkdir(parents=True, exist_ok=True)
 
@@ -167,9 +172,19 @@ y_test = keras.utils.to_categorical(y_test_raw, num_classes)
 
 x_train, x_valid, y_train, y_valid = train_test_split(x_test, y_test, test_size=0.2, random_state=13)
 
+
+
+
 print('x_train shape:', x_train.shape)
 print(x_train.shape[0], 'train samples')
 print(x_valid.shape[0], 'validation samples')
+
+x_train = x_train.astype('float32')
+x_valid = x_valid.astype('float32')
+x_train /= 255
+x_valid /= 255
+
+
 
 model = Sequential()
 model.add(Conv2D(32, (3, 3), padding='same',
@@ -197,21 +212,26 @@ model.add(Activation('softmax'))
 # initiate RMSprop optimizer
 opt = keras.optimizers.rmsprop(lr=0.0001, decay=1e-6)
 
-# Let's train the model
+# Let's compile and train the model
 model.compile(loss='categorical_crossentropy',
               optimizer=opt,
               metrics=['accuracy'])
 
-x_train = x_train.astype('float32')
-x_valid = x_valid.astype('float32')
-x_train /= 255
-x_valid /= 255
+# Create a TensorBoard logger
+logger = keras.callbacks.TensorBoard(
+    log_dir='logs/{}'.format(RUN_NAME),
+    histogram_freq=5,
+    write_graph=True
+)
 
-history = model.fit(x_train, y_train,
+history = model.fit(x_train,
+                    y_train,
                     batch_size=batch_size,
                     epochs=epochs,
                     validation_data=(x_valid, y_valid),
-                    shuffle=True)
+                    shuffle=True,
+                    callbacks=[logger])
+
 
 # Save model and weights
 if not os.path.isdir(save_dir):

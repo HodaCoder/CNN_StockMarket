@@ -32,7 +32,7 @@ split_char = "\t"
 column_for_high = 2
 column_for_low = 3
 file_name_stock = r'data_google_daily.txt'
-number_of_data_to_be_used = 2000
+number_of_data_to_be_used = 2500
 file_type = 'dec'
 
 RUN_NAME = "Run with " + str(number_of_data_to_be_used) + " input"

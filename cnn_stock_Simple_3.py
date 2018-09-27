@@ -16,28 +16,22 @@ from PIL import Image
 import math
 import pathlib
 
-
-
-
-width = 1
-height = 1
-
-batch_size = 32
-num_classes = 2
-epochs = 6
-save_dir = os.path.join(os.getcwd(), 'saved_models')
-model_name = 'stock_simple_model.h5'
-folder_fig_name = r'figures'
-split_char = "\t"
-column_for_high = 2
-column_for_low = 3
-file_name_stock = r'data_google_daily.txt'
-number_of_data_to_be_used = 2500
-file_type = 'dec'
-
-RUN_NAME = "Run with " + str(number_of_data_to_be_used) + " input"
-
-
+# initializing
+width = 1                                             # width of the figures in inch
+height = 1                                            # height of the figures in inch
+batch_size = 32                                       # Batch size for train
+num_classes = 2                                       # Number of classes (0:Price is going down, 1:Price is going Up)
+epochs = 6                                            # Number of Epochs for training
+save_dir = os.path.join(os.getcwd(), 'saved_models')  # Directory to save the model
+model_name = 'stock_simple_model.h5'                  # Name of the model to be saved
+folder_fig_name = r'figures'                          # Directory to save the Figures
+split_char = "\t"                                     # The character to split the reading data
+column_for_high = 2                                   # The Column in file that represents the high value of stock
+column_for_low = 3                                    # The Column in file that represents the low value of stock
+file_name_stock = r'data_google_daily.txt'            # The reading file of stock
+number_of_data_to_be_used = 2500                      # Number of Sample in reading file of stock
+file_type = 'dec'                                     # If file is descending or ascending
+RUN_NAME = "Run with " + str(number_of_data_to_be_used) + " input"   # Log file name with different input
 pathlib.Path(folder_fig_name).mkdir(parents=True, exist_ok=True)
 
 
@@ -172,9 +166,6 @@ y_test = keras.utils.to_categorical(y_test_raw, num_classes)
 
 x_train, x_valid, y_train, y_valid = train_test_split(x_test, y_test, test_size=0.2, random_state=13)
 
-
-
-
 print('x_train shape:', x_train.shape)
 print(x_train.shape[0], 'train samples')
 print(x_valid.shape[0], 'validation samples')
@@ -184,8 +175,7 @@ x_valid = x_valid.astype('float32')
 x_train /= 255
 x_valid /= 255
 
-
-
+# define the model
 model = Sequential()
 model.add(Conv2D(32, (3, 3), padding='same',
                  input_shape=x_train.shape[1:]))
@@ -194,14 +184,12 @@ model.add(Conv2D(32, (3, 3)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
-
 model.add(Conv2D(64, (3, 3), padding='same'))
 model.add(Activation('relu'))
 model.add(Conv2D(64, (3, 3)))
 model.add(Activation('relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
-
 model.add(Flatten())
 model.add(Dense(512))
 model.add(Activation('relu'))
@@ -210,12 +198,17 @@ model.add(Dense(num_classes))
 model.add(Activation('softmax'))
 
 # initiate RMSprop optimizer
-opt = keras.optimizers.rmsprop(lr=0.0001, decay=1e-6)
+opt = keras.optimizers.rmsprop(
+    lr=0.0001,
+    decay=1e-6
+)
 
 # Let's compile and train the model
-model.compile(loss='categorical_crossentropy',
-              optimizer=opt,
-              metrics=['accuracy'])
+model.compile(
+    loss='categorical_crossentropy',
+    optimizer=opt,
+    metrics=['accuracy']
+)
 
 # Create a TensorBoard logger
 logger = keras.callbacks.TensorBoard(
@@ -224,13 +217,15 @@ logger = keras.callbacks.TensorBoard(
     write_graph=True
 )
 
-history = model.fit(x_train,
-                    y_train,
-                    batch_size=batch_size,
-                    epochs=epochs,
-                    validation_data=(x_valid, y_valid),
-                    shuffle=True,
-                    callbacks=[logger])
+history = model.fit(
+    x_train,
+    y_train,
+    batch_size=batch_size,
+    epochs=epochs,
+    validation_data=(x_valid, y_valid),
+    shuffle=True,
+    callbacks=[logger]
+)
 
 
 # Save model and weights

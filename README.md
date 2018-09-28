@@ -1,4 +1,4 @@
-# CNN for Stock Predicting using Keras
+# CNN for Stock Prediction using Keras
 
 This is a Machine Learning project using Convolutional Neural Network to predict the stock price. It is a newly changed based on code by https://github.com/ZezhouLi.
 

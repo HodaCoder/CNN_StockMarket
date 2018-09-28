@@ -29,7 +29,7 @@ split_char = "\t"                                     # The character to split t
 column_for_high = 2                                   # The Column in file that represents the high value of stock
 column_for_low = 3                                    # The Column in file that represents the low value of stock
 file_name_stock = r'data_google_daily.txt'            # The reading file of stock
-number_of_data_to_be_used = 2500                      # Number of Sample in reading file of stock
+number_of_data_to_be_used = 2000                      # Number of Sample in reading file of stock
 file_type = 'dec'                                     # If file is descending or ascending
 RUN_NAME = "Run with " + str(number_of_data_to_be_used) + " input"   # Log file name with different input
 pathlib.Path(folder_fig_name).mkdir(parents=True, exist_ok=True)
@@ -177,25 +177,19 @@ x_valid /= 255
 
 # define the model
 model = Sequential()
-model.add(Conv2D(32, (3, 3), padding='same',
+model.add(Conv2D(32, (3, 3), padding='same', activation='relu',
                  input_shape=x_train.shape[1:]))
-model.add(Activation('relu'))
-model.add(Conv2D(32, (3, 3)))
-model.add(Activation('relu'))
+model.add(Conv2D(32, (3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
-model.add(Conv2D(64, (3, 3), padding='same'))
-model.add(Activation('relu'))
-model.add(Conv2D(64, (3, 3)))
-model.add(Activation('relu'))
+model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
+model.add(Conv2D(64, (3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 model.add(Flatten())
-model.add(Dense(512))
-model.add(Activation('relu'))
+model.add(Dense(512, activation='relu'))
 model.add(Dropout(0.5))
-model.add(Dense(num_classes))
-model.add(Activation('softmax'))
+model.add(Dense(num_classes, activation='softmax'))
 
 # initiate RMSprop optimizer
 opt = keras.optimizers.rmsprop(

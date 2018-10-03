@@ -162,6 +162,7 @@ plot_data(data)
 convert_image()
 print('Images saved successfully')
 
+# Add the x and y
 x = np.asarray(get_pixel_values())
 data_returned = find_returns(data)
 y = np.asarray(data_returned)

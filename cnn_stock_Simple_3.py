@@ -23,7 +23,8 @@ height = 1                                            # height of the figures in
 Alpha = 0.05                                        # the value for price difference range
                                                       #  (log (1-alpha)<log (p2/p1) < log (1+alpha))
 batch_size = 32                                       # Batch size for train
-num_classes = 2                                       # Number of classes (-1:Price is going down, 0:Price is sideways 1:Price is going Up)
+num_classes = 3                                       # Number of classes
+                                                      # -1:Price is going down,0:Price is sideways,1:Price is going Up
 epochs = 7                                            # Number of Epochs for training
 save_dir = os.path.join(os.getcwd(), 'saved_models')  # Directory to save the model
 model_name = 'stock_simple_model.h5'                  # Name of the model to be saved

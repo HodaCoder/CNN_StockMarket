@@ -254,7 +254,9 @@ print('Test accuracy:', scores[1])
 
 y_pred_raw = model.predict_classes(x_valid, verbose=1)
 y_pred = keras.utils.to_categorical(y_pred_raw, num_classes)
-# plt.plot(y_pred[:,0]-y_valid[:,0],'.r')
+# rr=np.multiply(y_pred,y_valid)
+# ss=[sum(e) for e in rr]
+# ss.count(1)/ss.__len__()
 
 
 # Plotting results

@@ -8,6 +8,7 @@ from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from sklearn.model_selection import train_test_split
 import os
+from sklearn import preprocessing
 import numpy as np
 import imageio
 import glob
@@ -19,15 +20,18 @@ import pathlib
 # initializing
 width = 1                                             # width of the figures in inch
 height = 1                                            # height of the figures in inch
+Alpha = 0.05                                        # the value for price difference range
+                                                      #  (log (1-alpha)<log (p2/p1) < log (1+alpha))
 batch_size = 32                                       # Batch size for train
-num_classes = 2                                       # Number of classes (0:Price is going down, 1:Price is going Up)
-epochs = 6                                            # Number of Epochs for training
+num_classes = 2                                       # Number of classes (-1:Price is going down, 0:Price is sideways 1:Price is going Up)
+epochs = 7                                            # Number of Epochs for training
 save_dir = os.path.join(os.getcwd(), 'saved_models')  # Directory to save the model
 model_name = 'stock_simple_model.h5'                  # Name of the model to be saved
 folder_fig_name = r'figures'                          # Directory to save the Figures
 split_char = "\t"                                     # The character to split the reading data
 column_for_high = 2                                   # The Column in file that represents the high value of stock
 column_for_low = 3                                    # The Column in file that represents the low value of stock
+column_for_volume = 5                                 # The Column in file that represents the volume value of stock
 file_name_stock = r'data_google_daily.txt'            # The reading file of stock
 number_of_data_to_be_used = 2000                      # Number of Sample in reading file of stock
 file_type = 'dec'                                     # If file is descending or ascending
@@ -73,14 +77,20 @@ def plot_data(data):
         while count <= (len(group) - 5):
             high = []
             low = []
+            volume = []
             for item in group[count - 30:count]:
                 high.append(item[0])
                 low.append(item[1])
+                volume.append(item[2])
+            scaler = preprocessing.MinMaxScaler(feature_range=(0, 1))
+            high = scaler.fit_transform(np.array(high).reshape(-1, 1))
+            low = scaler.fit_transform(np.array(low).reshape(-1, 1))
+            volume = scaler.fit_transform(np.array(volume).reshape(-1, 1))
             file_name = r'\fig_' + str(file_name_number)
             ax = plt.Axes(fig, [0., 0., 1., 1.])
             ax.set_axis_off()
             fig.add_axes(ax)
-            ax.plot(t, high[0:-1], 'b', t, low[0:-1], 'g')
+            ax.plot(t, high[0:-1], 'b', t, low[0:-1], 'g', t, volume[0:-1], 'r')
             fig.savefig(folder_fig_name + file_name, dpi=100)
             fig.clf()
             file_name_number += 1
@@ -100,7 +110,7 @@ def extract_useful_data(data):
     for group in data:
         temp_buffer = []
         for item in group:
-            temp = [item[column_for_high], item[column_for_low]]
+            temp = [item[column_for_high], item[column_for_low], item[column_for_volume]]
             temp = [float(i) for i in temp]
             temp_buffer.append(temp)
         groups.append(temp_buffer)
@@ -153,10 +163,13 @@ convert_image()
 print('Images saved successfully')
 
 x = np.asarray(get_pixel_values())
-y = np.asarray(find_returns(data))
-y[np.where(y <= 0)] = 0  # the simple form
-y[np.where(y > 0)] = 1  # the simple form
-number_of_data_to_be_used = math.ceil(x.shape[0] * 0.9)
+data_returned = find_returns(data)
+y = np.asarray(data_returned)
+
+y[np.where(y <= math.log(1-Alpha))] = -1                            # the price is going down
+y[np.where((y > math.log(1-Alpha)) & (y < math.log(1+Alpha)))] = 0  # the price is sideways
+y[np.where(y >= math.log(1+Alpha))] = 1                              # the price is going up
+number_of_data_to_be_used = math.ceil(x.shape[0] * 0.95)
 
 x_test = x[0:number_of_data_to_be_used]
 y_test_raw = y[0:number_of_data_to_be_used]

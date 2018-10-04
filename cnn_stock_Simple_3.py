@@ -25,7 +25,7 @@ Alpha = 0.05                                        # the value for price differ
 batch_size = 32                                       # Batch size for train
 num_classes = 3                                       # Number of classes
                                                       # -1:Price is going down,0:Price is sideways,1:Price is going Up
-epochs = 7                                            # Number of Epochs for training
+epochs = 10                                          # Number of Epochs for training
 save_dir = os.path.join(os.getcwd(), 'saved_models')  # Directory to save the model
 model_name = 'stock_simple_model.h5'                  # Name of the model to be saved
 folder_fig_name = r'figures'                          # Directory to save the Figures
@@ -34,7 +34,7 @@ column_for_high = 2                                   # The Column in file that 
 column_for_low = 3                                    # The Column in file that represents the low value of stock
 column_for_volume = 5                                 # The Column in file that represents the volume value of stock
 file_name_stock = r'data_google_daily.txt'            # The reading file of stock
-number_of_data_to_be_used = 2000                      # Number of Sample in reading file of stock
+number_of_data_to_be_used = 800                      # Number of Sample in reading file of stock
 file_type = 'dec'                                     # If file is descending or ascending
 RUN_NAME = "Run with " + str(number_of_data_to_be_used) + " input"   # Log file name with different input
 pathlib.Path(folder_fig_name).mkdir(parents=True, exist_ok=True)
@@ -197,22 +197,41 @@ model.add(Conv2D(32, (3, 3), padding='same', activation='relu',
                  input_shape=x_train.shape[1:]))
 model.add(Conv2D(32, (3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
+model.add(Dropout(0.5))
+
+model.add(Conv2D(32, (3, 3), padding='same', activation='relu'))
+model.add(Conv2D(32, (3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.5))
+
+model.add(Conv2D(32, (3, 3), padding='same', activation='relu'))
+model.add(Conv2D(32, (3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.5))
+
+model.add(Conv2D(32, (3, 3), padding='same', activation='relu'))
+model.add(Conv2D(32, (3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.5))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
 model.add(Conv2D(64, (3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.25))
+model.add(Dropout(0.5))
 
 model.add(Flatten())
 model.add(Dense(512, activation='relu'))
 model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='softmax'))
 
-# initiate RMSprop optimizer
-opt = keras.optimizers.rmsprop(
+model.summary()
+
+# initiate ADAM optimizer
+opt = keras.optimizers.Adam(
     lr=0.0001,
-    decay=1e-6
+    beta_1=0.9,
+    beta_2=0.999,
+    epsilon=1e-8
 )
 
 # Let's compile and train the model
@@ -228,7 +247,12 @@ logger = keras.callbacks.TensorBoard(
     histogram_freq=5,
     write_graph=True
 )
-
+keras.callbacks.EarlyStopping(
+    monitor='loss',
+    patience=0,
+    verbose=0,
+    mode='auto'
+)
 history = model.fit(
     x_train,
     y_train,
@@ -238,7 +262,6 @@ history = model.fit(
     shuffle=True,
     callbacks=[logger]
 )
-
 
 # Save model and weights
 if not os.path.isdir(save_dir):

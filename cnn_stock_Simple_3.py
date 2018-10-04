@@ -6,7 +6,7 @@ import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
-from keras.regularizers import Regularizer as regularizers
+from keras import regularizers
 from sklearn.model_selection import train_test_split
 import os
 from sklearn import preprocessing

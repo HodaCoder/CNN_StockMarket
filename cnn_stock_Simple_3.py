@@ -6,6 +6,7 @@ import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Activation, Flatten
 from keras.layers import Conv2D, MaxPooling2D
+from keras.regularizers import Regularizer as regularizers
 from sklearn.model_selection import train_test_split
 import os
 from sklearn import preprocessing
@@ -25,15 +26,15 @@ Alpha = 0.05                                        # the value for price differ
 batch_size = 32                                       # Batch size for train
 num_classes = 3                                       # Number of classes
                                                       # -1:Price is going down,0:Price is sideways,1:Price is going Up
-epochs = 10                                          # Number of Epochs for training
+epochs = 30                                          # Number of Epochs for training
 save_dir = os.path.join(os.getcwd(), 'saved_models')  # Directory to save the model
 model_name = 'stock_simple_model.h5'                  # Name of the model to be saved
 folder_fig_name = r'figures'                          # Directory to save the Figures
-split_char = "\t"                                     # The character to split the reading data
+split_char = ","                                     # The character to split the reading data, "\t" for other files
 column_for_high = 2                                   # The Column in file that represents the high value of stock
 column_for_low = 3                                    # The Column in file that represents the low value of stock
 column_for_volume = 5                                 # The Column in file that represents the volume value of stock
-file_name_stock = r'data_google_daily.txt'            # The reading file of stock
+file_name_stock = r'data_google_5min.txt'            # The reading file of stock
 number_of_data_to_be_used = 800                      # Number of Sample in reading file of stock
 file_type = 'dec'                                     # If file is descending or ascending
 RUN_NAME = "Run with " + str(number_of_data_to_be_used) + " input"   # Log file name with different input
@@ -193,31 +194,35 @@ x_valid /= 255
 # define the model
 model = Sequential()
 
-model.add(Conv2D(32, (3, 3), padding='same', activation='relu',
-                 input_shape=x_train.shape[1:]))
+model.add(Conv2D(32, (3, 3),
+                 padding='same',
+                 activation='relu',
+                 input_shape=x_train.shape[1:],
+                 kernel_regularizer=regularizers.l2(0.01))
+)
 model.add(Conv2D(32, (3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.5))
-
-model.add(Conv2D(32, (3, 3), padding='same', activation='relu'))
-model.add(Conv2D(32, (3, 3), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.5))
-
-model.add(Conv2D(32, (3, 3), padding='same', activation='relu'))
-model.add(Conv2D(32, (3, 3), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.5))
-
-model.add(Conv2D(32, (3, 3), padding='same', activation='relu'))
-model.add(Conv2D(32, (3, 3), activation='relu'))
-model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.5))
+model.add(Dropout(0.25))
 
 model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
 model.add(Conv2D(64, (3, 3), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
-model.add(Dropout(0.5))
+model.add(Dropout(0.25))
+
+model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
+model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Conv2D(128, (3, 3), padding='same', activation='relu'))
+model.add(Conv2D(128, (3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+model.add(Conv2D(64, (3, 3), padding='same', activation='relu'))
+model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
 
 model.add(Flatten())
 model.add(Dense(512, activation='relu'))

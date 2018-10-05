@@ -278,8 +278,8 @@ print('Saved trained model at %s ' % model_path)
 
 # Score trained model.
 scores = model.evaluate(x_valid, y_valid, verbose=1)
-print('Test loss:', scores[0])
-print('Test accuracy:', scores[1])
+print('Final Test loss:', scores[0])
+print('Final Test accuracy:', scores[1])
 
 y_pred_raw = model.predict_classes(x_valid, verbose=1)
 y_pred = keras.utils.to_categorical(y_pred_raw, num_classes)
